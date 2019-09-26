@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Fonte Poppins -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Data Table -->
+    <link href="https://cdn.datatables.net/1.10.18/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+
+    <!-- Estilo próprio -->
+    <link href="style.css" rel="stylesheet">
+
+    <title>ArqueoEXPLORER</title>
+  </head>
+  <body class="bg-secondary">
+    <nav class="navbar sticky-top navbar-light bg-white">
+      <!-- Brand [ARQUEOEXPLORER] -->
+      <a class="navbar-brand" href="#">
+        Arqueo
+        <small style="font-size: 50%;" class="text-muted font-weight-light">
+          EXPLORER
+        </small>
+      </a>
+      <!-- ToggleButton -->
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!-- Navegation -->
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#">
+              <i class="fa fa-home">&nbsp;&nbsp;</i>
+              Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="fileUpload.click()">
+              <i class="fa fa-upload">&nbsp;&nbsp;</i>
+              Importar
+            </a>
+            <input type="file" style="display: none;" id="fileUpload" onchange="upload_csv()"/>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" onclick="export_table()">
+              <i class="fa fa-download">&nbsp;&nbsp;</i>
+              Exportar
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-target="#modalComoUsar" data-toggle="modal">
+              <i class="fa fa-question">&nbsp;&nbsp;</i>
+              Como usar
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="#" data-target="#modalApagarDados" data-toggle="modal">
+              <i class="fa fa-warning">&nbsp;&nbsp;</i>
+              Apagar dados
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <!-- CONTENT -->
+    <div class="container" style="width: 100%; padding-top:5%;">
+      <div class="card">
+        <div class="card-header">
+          <div class="row">
+            <div class="col-3">
+              <input class="form-control form-control-sm" type="text" id="filter_nome_sitio" data-target-col="1" placeholder="Nome do sítio...">
+            </div>
+            <div class="col-3">
+              <input class="form-control form-control-sm" type="text" id="filter_localidade" data-target-col="3" placeholder="Localidade...">
+            </div>
+            <div class="col-6">
+              <button class="float-left btn-sm btn btn-primary" data-toggle="tooltip" data-html="true" title="<i class='fa fa-cog'>&nbsp;&nbsp;</i>Em construção...">
+                <i class="fa fa-filter">&nbsp;&nbsp;</i>Filtros
+              </button>
+              <button data-toggle="modal" data-target="#modalAdicionarRegistros" class="float-right btn-sm btn btn-success" onclick="btn_add_register_click()">
+                <i class="fa fa-plus">&nbsp;&nbsp;</i>Adicionar registro
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body" style="padding: 0%;">
+          <table id="main_table" style="margin-bottom: 0px;table-layout:fixed;" class="table table-sm table-bordered table-striped card-body">
+            <thead>
+              <tr>
+                <th class="text-truncate">Nº Sítio</th>
+                <th class="text-truncate">Nome Sítio</th>
+                <th class="text-truncate">Nº catálogo</th>
+                <th class="text-truncate">Localidade</th>
+                <th class="text-truncate">Município</th>
+                <th class="text-truncate">Tipo</th>
+                <th class="text-truncate">Data</th>
+                <th class="text-truncate">Observações</th>
+                <th class="text-truncate"></th>
+              </tr>
+            </thead>
+            <tbody id="main_tbody">
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer">
+          <small>
+            <!--
+            <i class="text-muted">
+              <i class="fa fa-info">&nbsp;&nbsp;</i>
+              Dados vindos do arquivo 
+              <b>'Lepan Diários Registo de Sítio (SÃO GONÇALO-PS).xlsx'</b>
+            </i>-->
+          </small>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal adicionar registro -->
+    <form action="#" id="form" onsubmit="modal_submit_click(this)" data-modal-mode="add">
+    <div class="modal fade" id="modalAdicionarRegistros" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg"  role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modal_adicionar_registro_title">Adicionar registro</h5>
+            <button type="button" onclick="btn_modal_close_click()" class="close" data-dismiss="modal" aria-label="Fechar" tabindex="-999999999">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-lg-3 col-md-3 col-sm-12">
+                <div class="form-group">
+                  <label>Data &nbsp;&nbsp;<i class="fa fa-asterisk fa-xsml text-muted"></i></label>
+                  <input tabindex="0" required id="input_data" class="form-control form-control-sm" type="date" data-tab-code="A00">
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-5 col-sm-12">
+                <div class="form-group">
+                  <label>Localidade &nbsp;&nbsp;<i class="fa fa-asterisk fa-xsml text-muted"></i></label>
+                  <input tabindex="3" required id="input_localidade" class="form-control form-control-sm" type="text" placeholder="..." data-tab-code="A01">
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-4 col-sm-12">
+                <div class="form-group">
+                  <label>Município &nbsp;&nbsp;<i class="fa fa-asterisk fa-xsml text-muted"></i></label>
+                  <input tabindex="4" required id="input_municipio" class="form-control form-control-sm" type="text" placeholder="..." data-tab-code="A02">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-3 col-md-3 col-sm-12">
+                <div class="form-group">
+                  <label>Nº Sítio &nbsp;&nbsp;<i class="fa fa-asterisk fa-xsml text-muted"></i></label>
+                  <input tabindex="5" required id="input_numero_sitio" class="form-control form-control-sm" type="text" placeholder="-"  data-tab-code="A10">
+                </div>
+              </div>
+              <div class="col-lg-6 col-md-5 col-sm-12">
+                <div class="form-group">
+                  <label>Nome Sítio &nbsp;&nbsp;<i class="fa fa-asterisk fa-xsml text-muted"></i></label>
+                  <input tabindex="6" required id="input_nome_sitio" class="form-control form-control-sm" type="text" placeholder="..."  data-tab-code="A11">
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-4 col-sm-12">
+                <div class="form-group">
+                  <label>Nº Catálogo &nbsp;&nbsp;<i class="fa fa-asterisk fa-xsml text-muted"></i></label>
+                  <input tabindex="7" required id="input_numero_catalogo" class="form-control form-control-sm" type="number" placeholder="0"  data-tab-code="A12">
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-3 col-md-3 col-sm-12">
+                <div class="form-group">
+                  <label>Tipo</label>
+                  <input tabindex="8" id="input_tipo" class="form-control form-control-sm" type="text" placeholder="..." data-tab-code="A20"> 
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <div class="form-group">
+                  <label>Observações</label>
+                  <textarea tabindex="9" id="input_obs" class="form-control form-control-sm" placeholder="..."  data-tab-code="A30"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <i class="fa fa-asterisk fa-xsml text-muted">&nbsp;&nbsp;</i><i class="text-muted">Campos obrigatórios</i>
+                <br>
+                <i class="fa fa-arrows-alt text-muted">&nbsp;&nbsp;</i><i class="text-muted">Use as teclas para navegar pelos campos e a tecla </i><i class="fa fa-check-square">&nbsp;</i>Enter<i class="text-muted"> para adicionar um registro</i>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button tabindex="11" type="button" class="btn btn-outline-secondary" data-dismiss="modal" onclick="btn_modal_close_click()">Fechar</button>
+            <button tabindex="10" type="submit" class="btn btn-success" id="btn_modal_submit">Adicionar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </form>
+
+    <!-- Modal para apagar todos os dados -->
+    <div class="modal fade" id="modalApagarDados" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg"  role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-danger" id="exampleModalLabel"><i class="fa fa-warning">&nbsp;&nbsp;</i>Apagar dados</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>
+              Tem certeza que deseja apagar todos os dados?
+              <br>
+              <small class="text-muted">Os dados apagados não podem ser recuperados, recomenda-se exportar a tabela para importa-la na próxima vez que for usar!</small>
+            </p>
+            <br>
+            <button class="btn btn-block btn-sm btn-danger" onclick="clear_table()">Sim, tenho certeza</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de ajuda -->
+    <div class="modal fade" id="modalComoUsar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg"  role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-primary" id="exampleModalLabel"><i class="fa fa-info">&nbsp;&nbsp;</i>Como usar</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <h4>Bem-vindo!</h4>
+            <p>O <b>ARQUEO<small class="text-muted">EXPLORER</small></b> é uma ferramenta gratuita para gerenciamento de dados que funciona através da inserção e alteração de registros em uma tabela.</p>
+            <p>Por enquanto, a aplicação se encontra em versão <b class="text-primary">Alpha</b> e não conta com um banco de dados, portanto é necessário exportar sua tabela quanto terminar de editar e importa-la novamente quando desejar</p>
+            <hr>
+            <h5>Inserindo registros</h5>
+            <p>Para adicionar registros basta clicar no botão <b class="text-success">Adicionar registro</b> e preencher o formulário. Os campos marcados com <i class="fa fa-asterisk text-muted">&nbsp;</i> são obrigatórios!</p>
+            <hr>
+            <h5>Editando registros</h5>
+            <p>Cada linha da tabela possui um botão <i class="fa fa-edit text-primary">&nbsp;</i> que permite editar os dados daquele registro.</p>
+            <hr>
+            <h5>Exportando e importando a tabela</h5>
+            <p>Para exportar ou importar sua tabela basta utilizar os botões <b><i class="fa fa-upload">&nbsp;&nbsp;</i>Importar</b> e <b><i class="fa fa-download">&nbsp;&nbsp;</i>Exportar</b></p>
+            <p>Os arquivos devem estar em formato .CSV e com os valores respeitando a disposição das colunas na tabela da aplicação.</p>
+            <p>Quando exportada, a tabela é salva em um arquivo com nome <i class="text text-primary">arqueoEXPLORER_data.csv</i> e é baixada automaticamente.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para confirmar apagar registro -->
+    <div class="modal fade" id="modalApagarRegistro" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg"  role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-danger" id="exampleModalLabel"><i class="fa fa-warning">&nbsp;&nbsp;</i>Apagar registro</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>
+              Tem certeza que deseja apagar o registro de <b>Nº de catálogo<b> <i class="text-primary" id="modal_delete_row_numero_catalogo"></i> que foi criado na <b>data</b> <i class="text-primary" id="modal_delete_row_data"></i>
+              <br>
+              <small class="text-muted">Os dados apagados não podem ser recuperados, recomenda-se exportar a tabela para importa-la na próxima vez que for usar!</small>
+            </p>
+            <br>
+            <button class="btn btn-block btn-sm btn-danger" onclick="modal_delete_row_submit_click()">Sim, tenho certeza</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!-- DataTable -->
+    <script src="https://cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.18/js/dataTables.bootstrap4.min.js"></script>
+    <!-- Scrip próprio -->
+    <script src="script.js"></script>
+  </body>
+</html>
